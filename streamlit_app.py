@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 import time
 
-st.title(":service_dog: My chatbot app")
+st.title(":service_dog: My GenAI Pharmacist chatbot")
 gemini_api_key = st.text_input("Gemini API Key: ", placeholder="Type your API Key here...", type="password")
 
 if "greeted" not in st.session_state:
