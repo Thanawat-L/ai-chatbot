@@ -7,15 +7,19 @@ gemini_api_key = st.text_input("Gemini API Key: ", placeholder="Type your API Ke
 
 if "greeted" not in st.session_state:
     st.session_state.greeted = False 
+if "success_state" not in st.session_state:
+    st.session_state.success_state = False 
 
 if gemini_api_key:
     try:
         genai.configure(api_key=gemini_api_key)
         model = genai.GenerativeModel("gemini-pro")
-        success_placeholder = st.empty()
-        success_placeholder.success("Gemini API Key successfully configured.")
-        time.sleep(3)
-        success_placeholder.empty()
+        if not st.session_state.success_state:
+            success_placeholder = st.empty()
+            success_placeholder.success("Gemini API Key successfully configured.")
+            time.sleep(3)
+            success_placeholder.empty()
+            st.session_state.success_state = True
     except Exception as e:
         st.error(f"Error configuring Gemini API Key: {e}")
 
