@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 import time
 
-st.title(":service_dog: My GenAI Pharmacist chatbot")
+st.title(":medical_symbol: My GenAI Pharmacist chatbot")
 gemini_api_key = st.text_input("Gemini API Key: ", placeholder="Type your API Key here...", type="password")
 
 if "greeted" not in st.session_state:
@@ -49,25 +49,27 @@ if gemini_api_key:
         st.session_state.chat_history.append(("user", user_input))
         st.chat_message("user").markdown(user_input)
 
-        if model:
-            try:
-                prompt = f"You are a knowledgeable and friendly pharmacist. \
-                Your role is to assist users by providing clear, concise, \
-                and helpful information about medications and \
-                their proper use based on the symptoms or \
-                conditions described by the user. Always include dosage instructions, \
-                potential side effects, precautions, and advice on how to take the medication \
-                (e.g., with food or water, the best time to take it). \
-                Ensure your responses are accurate and adhere to the highest pharmaceutical standards. \
-                You should also inform users when they should seek further medical attention or \
-                consult a healthcare provider for more detailed advice.\
-                The patient question is: {user_input}"
+        try:
+            prompt = "You are a knowledgeable and friendly pharmacist. \
+            Your role is to assist users by providing clear, concise, \
+            and helpful information about medications and their proper use. \
+            Here is the chat history:\n"
 
-                response = model.generate_content(prompt)
-                bot_response = response.text
+            for role, message in st.session_state.chat_history:
+                prompt += f"{role}: {message}\n"
 
-                st.session_state.chat_history.append(("ai", bot_response))
-                st.chat_message("assistant").markdown(bot_response)
+            prompt += f"User: {user_input}\n"
 
-            except Exception as e:
-                st.error(f"Error generating AI response: {e}")
+            prompt += "Please respond based on the information above, including dosage instructions, \
+                        potential side effects, precautions, and advice on how to take the medication. \
+                        Ensure your responses are accurate and adhere to the highest pharmaceutical standards. \
+                        Inform users when they should seek further medical attention or consult a healthcare provider."
+
+            response = model.generate_content(prompt)
+            bot_response = response.text
+
+            st.session_state.chat_history.append(("assistant", bot_response))
+            st.chat_message("assistant").markdown(bot_response)
+
+        except Exception as e:
+            st.error(f"Error generating AI response: {e}")
